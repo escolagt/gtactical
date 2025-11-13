@@ -5,18 +5,22 @@ import { SectionHeader } from "@/components/SectionHeader";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export const ContactMap = () => {
-  const { settings, loading } = useSiteSettings();
+  const { settings } = useSiteSettings();
 
-  if (loading || !settings) {
-    return (
-      <Section id="contato" variant="dark">
-        <p className="text-white/60">Carregando contato…</p>
-      </Section>
-    );
-  }
+  // Valores padrão para quando ainda não mexeu no painel
+  const defaultSettings = {
+    site_name: "G-TACTICAL",
+    whatsapp: "(43) 90000-0000",
+  };
 
-  const phoneDisplay = settings.whatsapp || "(43) 90000-0000";
-  const phoneNumeric = phoneDisplay.replace(/\D/g, ""); // remove parenteses e traços para usar no wa.me
+  // Se vier algo do painel, sobrescreve os padrões
+  const mergedSettings = {
+    ...defaultSettings,
+    ...(settings ?? {}),
+  };
+
+  const phoneDisplay = mergedSettings.whatsapp;
+  const phoneNumeric = phoneDisplay.replace(/\D/g, ""); // remove tudo que não for número
 
   return (
     <Section id="contato" variant="dark">
@@ -30,7 +34,7 @@ export const ContactMap = () => {
         <div className="rounded-2xl bg-white/[0.03] border border-white/[0.05] p-6 flex flex-col gap-6">
           <div>
             <h3 className="font-semibold text-white text-lg">
-              {settings.site_name || "G-TACTICAL"}
+              {mergedSettings.site_name}
             </h3>
             <p className="text-xs text-white/60">
               Treinamento tático & Regularização de armas
@@ -41,7 +45,8 @@ export const ContactMap = () => {
             <div className="flex items-start gap-3">
               <MapPin className="h-5 w-5 text-white/60 mt-0.5" />
               <p>
-                Parceria com <span className="font-medium">Clube de Tiro Massada</span>
+                Parceria com{" "}
+                <span className="font-medium">Clube de Tiro Massada</span>
                 <br />
                 Em frente à Chácara Império — PR-160, Imbaú-PR, 84250-000
               </p>
@@ -74,7 +79,7 @@ export const ContactMap = () => {
         <div className="flex items-center justify-center">
           <img
             src="/escudo.png"
-            alt={settings.site_name}
+            alt={mergedSettings.site_name}
             className="w-full max-w-xs md:max-w-sm h-auto object-contain logo-float"
           />
         </div>
