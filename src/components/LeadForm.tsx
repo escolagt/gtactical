@@ -100,7 +100,7 @@ export const LeadForm = () => {
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  const validateForm = (): boolean => {
+    const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
     if (!formData.curso) newErrors.curso = "Selecione um curso";
     if (!formData.turma) newErrors.turma = "Selecione uma turma";
@@ -123,11 +123,14 @@ export const LeadForm = () => {
       newErrors.aceitoTermos = "Você deve aceitar os termos";
     if (!formData.aceitoGravacao)
       newErrors.aceitoGravacao = "Você deve autorizar a gravação";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // ⬇⬇⬇ FUNÇÃO ATUALIZADA AQUI ⬇⬇⬇
+  // ============================================
+  // SUBMIT DO FORMULÁRIO (única versão válida)
+  // ============================================
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
@@ -141,68 +144,71 @@ export const LeadForm = () => {
     setSubmitStatus("idle");
 
     try {
-  const safeUserAgent =
-    typeof navigator !== "undefined" && navigator.userAgent
-      ? navigator.userAgent.slice(0, 255) // garante que cabe no varchar(255)
-      : "unknown";
+      const safeUserAgent =
+        typeof navigator !== "undefined" && navigator.userAgent
+          ? navigator.userAgent
+          : "unknown";
 
-  const payload = {
-    course_id: formData.curso || null, // UUID do curso (ou null)
-    schedule_id: formData.turma || null, // UUID da turma (ou null)
-    full_name: sanitizeInput(formData.nome || ""),
-    birth_date: formData.dataNascimento || "",
-    cpf: (formData.cpf || "").replace(/\D/g, ""),
-    phone: (formData.telefone || "").replace(/\D/g, ""),
-    email: sanitizeInput(formData.email || "").toLowerCase(),
-    city: sanitizeInput(formData.cidade || ""),
-    state: sanitizeInput(formData.uf || "").toUpperCase(),
-    observations: sanitizeInput(formData.observacoes || ""),
-    terms_accepted: !!formData.aceitoTermos,
-    recording_authorized: !!formData.aceitoGravacao,
-    status: "novo" as const,
-    source: "website",
-    user_agent: safeUserAgent,
-  };
+      const payload = {
+        course_id: formData.curso || null,
+        schedule_id: formData.turma || null,
+        full_name: sanitizeInput(formData.nome || ""),
+        birth_date: formData.dataNascimento || "",
+        cpf: (formData.cpf || "").replace(/\D/g, ""),
+        phone: (formData.telefone || "").replace(/\D/g, ""),
+        email: sanitizeInput(formData.email || "").toLowerCase(),
+        city: sanitizeInput(formData.cidade || ""),
+        state: sanitizeInput(formData.uf || "").toUpperCase(),
+        observations: sanitizeInput(formData.observacoes || ""),
+        terms_accepted: !!formData.aceitoTermos,
+        recording_authorized: !!formData.aceitoGravacao,
+        status: "novo" as const,
+        source: "website",
+        user_agent: safeUserAgent,
+      };
 
-  // 1) salva no Supabase e retorna o registro inserido
-  const { data, error } = await supabase
-    .from("leads")
-    .insert(payload)
-    .select()
-    .maybeSingle();
+      console.log("[LeadForm] payload:", payload);
 
-  if (error || !data) {
-    throw error || new Error("Lead não retornado pelo insert");
-  }
+      const { data, error } = await supabase
+        .from("leads")
+        .insert(payload)
+        .select()
+        .maybeSingle();
 
+      if (error || !data) {
+        console.error("[LeadForm] Supabase insert error:", error);
+        throw error || new Error("Lead não retornado pelo insert");
+      }
 
-      // 2) dispara a Edge Function de notificação por e-mail
+      // Edge Function de e-mail (não derruba o fluxo se falhar)
       try {
         await supabase.functions.invoke("lead-notify", {
           body: { record: data },
         });
-      } catch (err) {
-        console.error("Erro ao disparar lead-notify:", err);
-        // não derruba o fluxo – lead já está salvo
+      } catch (fnErr) {
+        console.error("[LeadForm] lead-notify error:", fnErr);
       }
 
-      // 3) status de sucesso + analytics
+      // Sucesso total
       setSubmitStatus("success");
-      trackLeadSubmit(String(formData.curso || "")); // mantém seu analytics
-
-      // 4) limpa formulário
+      trackLeadSubmit(String(formData.curso || ""));
       setFormData({});
-    } catch (err) {
-      console.error("Form submission error:", err);
+    } catch (err: any) {
+      console.error("[LeadForm] Form submission error:", err);
+
       setSubmitStatus("error");
-      setErrorMessage(
-        "Erro ao enviar formulário. Por favor, tente novamente ou entre em contato via WhatsApp."
-      );
+
+      const supaMessage =
+        err?.message ||
+        err?.error_description ||
+        err?.hint ||
+        "Erro ao enviar formulário. Por favor, tente novamente ou entre em contato via WhatsApp.";
+
+      setErrorMessage(`Erro ao enviar formulário: ${supaMessage}`);
     } finally {
       setIsSubmitting(false);
     }
   };
-  // ⬆⬆⬆ FIM DO HANDLE SUBMIT ATUALIZADO ⬆⬆⬆
 
   return (
     <section
