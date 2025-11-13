@@ -141,34 +141,40 @@ export const LeadForm = () => {
     setSubmitStatus("idle");
 
     try {
-      const payload = {
-        course_id: formData.curso || null, // UUID do curso (ou null)
-        schedule_id: formData.turma || null, // UUID da turma (ou null)
-        full_name: sanitizeInput(formData.nome || ""),
-        birth_date: formData.dataNascimento || "",
-        cpf: (formData.cpf || "").replace(/\D/g, ""),
-        phone: (formData.telefone || "").replace(/\D/g, ""),
-        email: sanitizeInput(formData.email || "").toLowerCase(),
-        city: sanitizeInput(formData.cidade || ""),
-        state: sanitizeInput(formData.uf || "").toUpperCase(),
-        observations: sanitizeInput(formData.observacoes || ""),
-        terms_accepted: !!formData.aceitoTermos,
-        recording_authorized: !!formData.aceitoGravacao,
-        status: "novo" as const,
-        source: "website",
-        user_agent: navigator.userAgent,
-      };
+  const safeUserAgent =
+    typeof navigator !== "undefined" && navigator.userAgent
+      ? navigator.userAgent.slice(0, 255) // garante que cabe no varchar(255)
+      : "unknown";
 
-      // 1) salva no Supabase e retorna o registro inserido
-      const { data, error } = await supabase
-        .from("leads")
-        .insert(payload)
-        .select()
-        .maybeSingle();
+  const payload = {
+    course_id: formData.curso || null, // UUID do curso (ou null)
+    schedule_id: formData.turma || null, // UUID da turma (ou null)
+    full_name: sanitizeInput(formData.nome || ""),
+    birth_date: formData.dataNascimento || "",
+    cpf: (formData.cpf || "").replace(/\D/g, ""),
+    phone: (formData.telefone || "").replace(/\D/g, ""),
+    email: sanitizeInput(formData.email || "").toLowerCase(),
+    city: sanitizeInput(formData.cidade || ""),
+    state: sanitizeInput(formData.uf || "").toUpperCase(),
+    observations: sanitizeInput(formData.observacoes || ""),
+    terms_accepted: !!formData.aceitoTermos,
+    recording_authorized: !!formData.aceitoGravacao,
+    status: "novo" as const,
+    source: "website",
+    user_agent: safeUserAgent,
+  };
 
-      if (error || !data) {
-        throw error || new Error("Lead não retornado pelo insert");
-      }
+  // 1) salva no Supabase e retorna o registro inserido
+  const { data, error } = await supabase
+    .from("leads")
+    .insert(payload)
+    .select()
+    .maybeSingle();
+
+  if (error || !data) {
+    throw error || new Error("Lead não retornado pelo insert");
+  }
+
 
       // 2) dispara a Edge Function de notificação por e-mail
       try {
