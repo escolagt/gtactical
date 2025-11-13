@@ -13,6 +13,7 @@ import Leads from "./admin/pages/Leads";
 import Courses from "./admin/pages/Courses";
 import Settings from "./admin/pages/Settings";
 import AdminLogin from "./admin/pages/Login";
+import Schedules from "./admin/pages/Schedules";
 import AdminLayout from "./admin/components/AdminLayout";
 import RequireAdmin from "./admin/components/RequireAdmin";
 
@@ -52,6 +53,7 @@ const App = () => (
             <Route path="leads" element={<Leads />} />
             <Route path="courses" element={<Courses />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="schedules" element={<Schedules />} />
           </Route>
 
           {/* Catch-all */}

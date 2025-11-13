@@ -109,7 +109,7 @@ export const Footer = () => {
             <ul className="space-y-2 text-sm">
               <li>
                 <a
-                  href="/legal/privacidade"
+                  href="/politica-de-privacidade"
                   className="text-foreground/70 hover:text-foreground transition-colors"
                 >
                   Política de Privacidade
@@ -117,7 +117,7 @@ export const Footer = () => {
               </li>
               <li>
                 <a
-                  href="/legal/termos"
+                  href="/termos-de-uso"
                   className="text-foreground/70 hover:text-foreground transition-colors"
                 >
                   Termos de Uso
