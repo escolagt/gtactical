@@ -30,8 +30,8 @@ type CourseRow = {
   duration_hours: number;
   max_students: number;
   price: number | null;
-  model_url: string | null;
-  poster_url: string | null;
+  model_url: string | null;   // pode manter na tabela, só não editamos mais aqui
+  poster_url: string | null;  // idem
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -48,8 +48,6 @@ type CourseForm = {
   duration_hours: string;
   max_students: string;
   price: string;
-  model_url: string;
-  poster_url: string;
   is_active: boolean;
 };
 
@@ -64,8 +62,6 @@ const emptyForm: CourseForm = {
   duration_hours: "8",
   max_students: "12",
   price: "",
-  model_url: "",
-  poster_url: "",
   is_active: true,
 };
 
@@ -167,8 +163,6 @@ export default function Courses() {
       duration_hours: duration,
       max_students: max,
       price,
-      model_url: form.model_url ? form.model_url.trim() : null,
-      poster_url: form.poster_url ? form.poster_url.trim() : null,
       is_active: !!form.is_active,
     };
 
@@ -227,8 +221,6 @@ export default function Courses() {
       duration_hours: String(c.duration_hours ?? 0),
       max_students: String(c.max_students ?? 0),
       price: c.price == null ? "" : String(c.price),
-      model_url: c.model_url ?? "",
-      poster_url: c.poster_url ?? "",
       is_active: !!c.is_active,
     });
     setOpen(true);
@@ -345,7 +337,7 @@ export default function Courses() {
         </div>
 
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="sm:max-w-2xl bg-white/[0.02] border border-white/10">
+          <DialogContent className="sm:max-w-2xl bg-white/[0.02] border border-white/10 max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-white">
                 {editing ? "Editar curso" : "Novo curso"}
@@ -467,27 +459,6 @@ export default function Courses() {
                   value={form.expected_results}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, expected_results: e.target.value }))
-                  }
-                />
-              </div>
-
-              <div>
-                <Label>Poster URL (opcional)</Label>
-                <Input
-                  placeholder="https://…/poster.webp"
-                  value={form.poster_url}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, poster_url: e.target.value }))
-                  }
-                />
-              </div>
-              <div>
-                <Label>Model 3D URL (opcional)</Label>
-                <Input
-                  placeholder="https://…/model.glb"
-                  value={form.model_url}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, model_url: e.target.value }))
                   }
                 />
               </div>
