@@ -15,6 +15,7 @@ export default defineConfig({
     },
   },
   build: {
-    chunkSizeWarningLimit: 1500, // aumenta o limite do aviso de chunk grande (em KB)
+    outDir: "docs",              // 👈 novo: Vite vai gerar o build dentro de docs/
+    chunkSizeWarningLimit: 1500, // mantém seu limite de chunk
   },
 });
