@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
-const IMAGE_SRC = "/posters/caveira.png"; // ajuste o path se estiver em outro lugar
+const IMAGE_SRC = "/posters/caveira.png";
 
 export default function Showcase3D() {
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -35,7 +35,7 @@ export default function Showcase3D() {
     <section
       id="showcase3d"
       ref={parallaxRef}
-      className="relative w-full min-h-[86vh] bg-black overflow-hidden pt-24 md:pt-28 pb-16 md:pb-24 scroll-mt-28"
+      className="relative w-full min-h-[100vh] md:min-h-[86vh] bg-black overflow-hidden pt-24 md:pt-28 pb-20 md:pb-24 scroll-mt-28"
     >
       {/* FUNDOS */}
       <div className="absolute inset-0 pointer-events-none">
@@ -56,59 +56,15 @@ export default function Showcase3D() {
         />
       </div>
 
-      {/* IMAGEM DA CAVEIRA */}
-      <div className="absolute inset-0 flex items-center justify-end pointer-events-none">
-        <motion.div
-          initial={reducedMotion ? false : { opacity: 0, x: 60, scale: 0.9 }}
-          animate={
-            reducedMotion
-              ? { opacity: 1, x: 0, scale: 1 }
-              : {
-                  opacity: 1,
-                  x: 0,
-                  scale: 1,
-                  y: [0, -10, 0], // flutuação suave
-                }
-          }
-          transition={
-            reducedMotion
-              ? { duration: 0.8, ease: "easeOut" }
-              : {
-                  opacity: { duration: 0.8, ease: "easeOut" },
-                  x: { duration: 0.8, ease: "easeOut" },
-                  scale: { duration: 0.8, ease: "easeOut" },
-                  y: {
-                    duration: 4,
-                    repeat: Infinity,
-                    repeatType: "mirror",
-                    ease: "easeInOut",
-                  },
-                }
-          }
-          className="relative w-[68vw] max-w-[790px] mr-[-6vw] md:mr-[-4vw] lg:mr-[-2vw]"
-          style={{
-            transformOrigin: "right center",
-          }}
-        >
-          <div className="pointer-events-auto">
-            <img
-              src={IMAGE_SRC}
-              alt="Caveira tática da G-TACTICAL em destaque"
-              className="w-full h-auto object-contain select-none"
-              draggable={false}
-            />
-          </div>
-        </motion.div>
-      </div>
-
-      {/* TEXTO */}
-      <div className="relative z-10 h-full flex items-center pointer-events-none">
-        <div className="w-full">
+      {/* CONTEÚDO: TEXTO + IMAGEM */}
+      <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center">
+        {/* TEXTO */}
+        <div className="w-full md:w-1/2">
           <motion.div
             initial={reducedMotion ? false : { opacity: 0, x: -24 }}
             animate={reducedMotion ? {} : { opacity: 1, x: 0 }}
             transition={{ duration: 0.9, ease: "easeOut" }}
-            className="ml-6 sm:ml-10 md:ml-16 lg:ml-24 max-w-xl pointer-events-auto"
+            className="ml-6 sm:ml-10 md:ml-16 lg:ml-24 max-w-xl"
           >
             <h1 className="relative text-texture-cimento text-4xl sm:text-5xl md:text-6xl font-extrabold leading-[1.05]">
               Treine com segurança.<br />Domine a técnica.<br />Preserve vidas.
@@ -119,9 +75,52 @@ export default function Showcase3D() {
               transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
               className="mt-6 text-base sm:text-lg text-white/85 max-w-md"
             >
-              Escola de tiro profissional com instrutores experientes e estrutura
-              completa para seu desenvolvimento.
+              Escola de tiro profissional com instrutores experientes e
+              estrutura completa para seu desenvolvimento.
             </motion.p>
+          </motion.div>
+        </div>
+
+        {/* IMAGEM DA CAVEIRA */}
+        <div className="w-full md:w-1/2 flex justify-center md:justify-end mt-10 md:mt-0 pr-0 md:pr-10 lg:pr-16">
+          <motion.div
+            initial={reducedMotion ? false : { opacity: 0, x: 60, scale: 0.9 }}
+            animate={
+              reducedMotion
+                ? { opacity: 1, x: 0, scale: 1 }
+                : {
+                    opacity: 1,
+                    x: 0,
+                    scale: 1,
+                    y: [0, -10, 0], // flutuação suave
+                  }
+            }
+            transition={
+              reducedMotion
+                ? { duration: 0.8, ease: "easeOut" }
+                : {
+                    opacity: { duration: 0.8, ease: "easeOut" },
+                    x: { duration: 0.8, ease: "easeOut" },
+                    scale: { duration: 0.8, ease: "easeOut" },
+                    y: {
+                      duration: 4,
+                      repeat: Infinity,
+                      repeatType: "mirror",
+                      ease: "easeInOut",
+                    },
+                  }
+            }
+            className="relative w-[70vw] max-w-[380px] sm:max-w-[600px] md:w-[68vw] md:max-w-[700px]"
+            style={{
+              transformOrigin: "right center",
+            }}
+          >
+            <img
+              src={IMAGE_SRC}
+              alt="Caveira tática da G-TACTICAL em destaque"
+              className="w-full h-auto max-h-[50vh] md:max-h-none object-contain select-none"
+              draggable={false}
+            />
           </motion.div>
         </div>
       </div>
