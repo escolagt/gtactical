@@ -519,7 +519,7 @@ export const LeadForm = () => {
                   <Label htmlFor="aceitoTermos" className="text-sm cursor-pointer">
                     Aceito os{" "}
                     <a
-                      href="/legal/termos"
+                      href="/termos-de-uso"
                       className="text-white underline decoration-white/40 hover:decoration-white/70"
                       target="_blank"
                     >
@@ -527,7 +527,7 @@ export const LeadForm = () => {
                     </a>{" "}
                     e a{" "}
                     <a
-                      href="/legal/privacidade"
+                      href="/politica-de-privacidade"
                       className="text-white underline decoration-white/40 hover:decoration-white/70"
                       target="_blank"
                     >
