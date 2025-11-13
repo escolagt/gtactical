@@ -213,67 +213,28 @@ export default function Schedules() {
               <DialogDescription className="text-foreground/70">Defina curso, datas e capacidade.</DialogDescription>
             </DialogHeader>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2">
-                <Label>Curso *</Label>
-                <select
-                  className="w-full rounded-md bg-white/[0.05] border border-white/10 px-3 py-2"
-                  value={form.course_id}
-                  onChange={(e)=>setForm(f=>({ ...f, course_id: e.target.value }))}
-                >
-                  <option value="">Selecione</option>
-                  {courses.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
-                </select>
-              </div>
+            <div className="md:col-span-2">
+  <Label>Curso *</Label>
+  <select
+    className="w-full rounded-md bg-black/70 text-white border border-white/20 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30"
+    value={form.course_id}
+    onChange={(e) => setForm(f => ({ ...f, course_id: e.target.value }))}
+  >
+    <option value="" className="bg-black text-white">
+      Selecione
+    </option>
+    {courses.map(c => (
+      <option
+        key={c.id}
+        value={c.id}
+        className="bg-black text-white"
+      >
+        {c.title}
+      </option>
+    ))}
+  </select>
+</div>
 
-              <div>
-                <Label>Início *</Label>
-                <Input type="date" value={form.start_date} onChange={e=>setForm(f=>({ ...f, start_date: e.target.value }))} />
-              </div>
-              <div>
-                <Label>Fim</Label>
-                <Input type="date" value={form.end_date || ""} onChange={e=>setForm(f=>({ ...f, end_date: e.target.value }))} />
-              </div>
-
-              <div>
-                <Label>Hora início</Label>
-                <Input type="time" value={form.time_start || ""} onChange={e=>setForm(f=>({ ...f, time_start: e.target.value }))} />
-              </div>
-              <div>
-                <Label>Hora fim</Label>
-                <Input type="time" value={form.time_end || ""} onChange={e=>setForm(f=>({ ...f, time_end: e.target.value }))} />
-              </div>
-
-              <div className="md:col-span-2">
-                <Label>Local *</Label>
-                <Input value={form.location} onChange={e=>setForm(f=>({ ...f, location: e.target.value }))} />
-              </div>
-
-              <div>
-                <Label>Vagas *</Label>
-                <Input type="number" value={form.max_students} onChange={e=>setForm(f=>({ ...f, max_students: Number(e.target.value) }))} />
-              </div>
-
-              <div>
-                <Label>Status</Label>
-                <select
-                  className="w-full rounded-md bg-white/[0.05] border border-white/10 px-3 py-2"
-                  value={form.status}
-                  onChange={(e)=>setForm(f=>({ ...f, status: e.target.value as any }))}
-                >
-                  <option value="aberto">Aberto</option>
-                  <option value="em_andamento">Em andamento</option>
-                  <option value="concluido">Concluído</option>
-                  <option value="cancelado">Cancelado</option>
-                </select>
-              </div>
-
-              <div className="md:col-span-2">
-                <Label>Observações</Label>
-                <textarea className="w-full rounded-md bg-white/[0.05] border border-white/10 px-3 py-2" rows={3}
-                  value={form.notes || ""} onChange={(e)=>setForm(f=>({ ...f, notes: e.target.value }))} />
-              </div>
-            </div>
 
             <Separator className="my-3 bg-white/10" />
             <DialogFooter>
