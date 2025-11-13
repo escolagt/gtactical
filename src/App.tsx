@@ -16,8 +16,10 @@ import AdminLogin from "./admin/pages/Login";
 import AdminLayout from "./admin/components/AdminLayout";
 import RequireAdmin from "./admin/components/RequireAdmin";
 
-// Reset de senha (nova página)
+// Público extra
 import ResetPassword from "./pages/ResetPassword";
+import TermsPage from "./pages/TermsPage";
+import PrivacyPage from "./pages/PrivacyPage";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +34,10 @@ const App = () => (
           <Route path="/" element={<Landing />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/admin/login" element={<AdminLogin />} />
+
+          {/* Páginas legais públicas */}
+          <Route path="/termos-de-uso" element={<TermsPage />} />
+          <Route path="/politica-de-privacidade" element={<PrivacyPage />} />
 
           {/* Área Admin (protegida) */}
           <Route
