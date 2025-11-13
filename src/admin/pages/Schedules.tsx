@@ -4,7 +4,14 @@ import { AdminNav } from "../components/AdminNav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter
+} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Search, Plus, Edit, Trash2 } from "lucide-react";
 
@@ -49,15 +56,24 @@ export default function Schedules() {
   const load = async () => {
     setLoading(true);
     const [cRes, sRes] = await Promise.all([
-      supabase.from("courses").select("id, title, slug").eq("is_active", true).order("title"),
-      supabase.from("schedules").select(`*, courses(id, title, slug)`).order("start_date")
+      supabase
+        .from("courses")
+        .select("id, title, slug")
+        .eq("is_active", true)
+        .order("title"),
+      supabase
+        .from("schedules")
+        .select(`*, courses(id, title, slug)`)
+        .order("start_date")
     ]);
     if (!cRes.error) setCourses((cRes.data || []) as CourseRef[]);
     if (!sRes.error) setItems((sRes.data || []) as any);
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -87,7 +103,10 @@ export default function Schedules() {
       : await supabase.from("schedules").insert(payload);
 
     setSaving(false);
-    if (error) { console.error(error); return; }
+    if (error) {
+      console.error(error);
+      return;
+    }
     setOpen(false);
     setEditing(null);
     setForm(emptyForm);
@@ -103,7 +122,9 @@ export default function Schedules() {
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4">
-        <div className="text-sm text-foreground/60 mb-4">Dashboard / <span className="text-foreground">Turmas</span></div>
+        <div className="text-sm text-foreground/60 mb-4">
+          Dashboard / <span className="text-foreground">Turmas</span>
+        </div>
 
         <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
@@ -113,7 +134,11 @@ export default function Schedules() {
           <div className="flex items-center gap-2">
             <Button
               className="bg-white/[0.1] border border-white/20 hover:bg-white/[0.2] text-white"
-              onClick={() => { setEditing(null); setForm(emptyForm); setOpen(true); }}
+              onClick={() => {
+                setEditing(null);
+                setForm(emptyForm);
+                setOpen(true);
+              }}
             >
               <Plus className="h-4 w-4 mr-2" />
               Nova Turma
@@ -132,7 +157,7 @@ export default function Schedules() {
               <Input
                 placeholder="Buscar por curso ou local…"
                 value={search}
-                onChange={(e)=>setSearch(e.target.value)}
+                onChange={(e) => setSearch(e.target.value)}
                 className="bg-white/[0.05] border-white/10"
               />
             </div>
@@ -154,14 +179,31 @@ export default function Schedules() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filtered.map(s => (
-                      <tr key={s.id} className="border-b border-white/5 hover:bg-white/[0.04]">
-                        <td className="px-4 py-3 font-medium">{s.courses?.title || "-"}</td>
-                        <td className="px-4 py-3">{s.start_date ? new Date(s.start_date).toLocaleDateString("pt-BR") : "-"}</td>
-                        <td className="px-4 py-3">{s.end_date ? new Date(s.end_date).toLocaleDateString("pt-BR") : "-"}</td>
+                    {filtered.map((s) => (
+                      <tr
+                        key={s.id}
+                        className="border-b border-white/5 hover:bg-white/[0.04]"
+                      >
+                        <td className="px-4 py-3 font-medium">
+                          {s.courses?.title || "-"}
+                        </td>
+                        <td className="px-4 py-3">
+                          {s.start_date
+                            ? new Date(s.start_date).toLocaleDateString("pt-BR")
+                            : "-"}
+                        </td>
+                        <td className="px-4 py-3">
+                          {s.end_date
+                            ? new Date(s.end_date).toLocaleDateString("pt-BR")
+                            : "-"}
+                        </td>
                         <td className="px-4 py-3">{s.location}</td>
-                        <td className="px-4 py-3">{s.enrolled_count}/{s.max_students}</td>
-                        <td className="px-4 py-3 capitalize">{s.status.replace("_", " ")}</td>
+                        <td className="px-4 py-3">
+                          {s.enrolled_count}/{s.max_students}
+                        </td>
+                        <td className="px-4 py-3 capitalize">
+                          {s.status.replace("_", " ")}
+                        </td>
                         <td className="px-4 py-3 text-right">
                           <Button
                             size="sm"
@@ -197,7 +239,14 @@ export default function Schedules() {
                       </tr>
                     ))}
                     {filtered.length === 0 && (
-                      <tr><td className="px-4 py-6 text-foreground/60" colSpan={7}>Nenhuma turma encontrada.</td></tr>
+                      <tr>
+                        <td
+                          className="px-4 py-6 text-foreground/60"
+                          colSpan={7}
+                        >
+                          Nenhuma turma encontrada.
+                        </td>
+                      </tr>
                     )}
                   </tbody>
                 </table>
@@ -209,38 +258,155 @@ export default function Schedules() {
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent className="sm:max-w-2xl bg-white/[0.02] border border-white/10">
             <DialogHeader>
-              <DialogTitle className="text-white">{editing ? "Editar turma" : "Nova turma"}</DialogTitle>
-              <DialogDescription className="text-foreground/70">Defina curso, datas e capacidade.</DialogDescription>
+              <DialogTitle className="text-white">
+                {editing ? "Editar turma" : "Nova turma"}
+              </DialogTitle>
+              <DialogDescription className="text-foreground/70">
+                Defina curso, datas e capacidade.
+              </DialogDescription>
             </DialogHeader>
 
-            <div className="md:col-span-2">
-  <Label>Curso *</Label>
-  <select
-    className="w-full rounded-md bg-black/70 text-white border border-white/20 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30"
-    value={form.course_id}
-    onChange={(e) => setForm(f => ({ ...f, course_id: e.target.value }))}
-  >
-    <option value="" className="bg-black text-white">
-      Selecione
-    </option>
-    {courses.map(c => (
-      <option
-        key={c.id}
-        value={c.id}
-        className="bg-black text-white"
-      >
-        {c.title}
-      </option>
-    ))}
-  </select>
-</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="md:col-span-2">
+                <Label>Curso *</Label>
+                <select
+                  className="w-full rounded-md bg-black/70 text-white border border-white/20 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30"
+                  value={form.course_id}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, course_id: e.target.value }))
+                  }
+                >
+                  <option value="" className="bg-black text-white">
+                    Selecione
+                  </option>
+                  {courses.map((c) => (
+                    <option
+                      key={c.id}
+                      value={c.id}
+                      className="bg-black text-white"
+                    >
+                      {c.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
+              <div>
+                <Label>Início *</Label>
+                <Input
+                  type="date"
+                  value={form.start_date}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, start_date: e.target.value }))
+                  }
+                />
+              </div>
+
+              <div>
+                <Label>Fim</Label>
+                <Input
+                  type="date"
+                  value={form.end_date || ""}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, end_date: e.target.value }))
+                  }
+                />
+              </div>
+
+              <div>
+                <Label>Hora início</Label>
+                <Input
+                  type="time"
+                  value={form.time_start || ""}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, time_start: e.target.value }))
+                  }
+                />
+              </div>
+
+              <div>
+                <Label>Hora fim</Label>
+                <Input
+                  type="time"
+                  value={form.time_end || ""}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, time_end: e.target.value }))
+                  }
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <Label>Local *</Label>
+                <Input
+                  value={form.location}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, location: e.target.value }))
+                  }
+                />
+              </div>
+
+              <div>
+                <Label>Vagas *</Label>
+                <Input
+                  type="number"
+                  value={form.max_students}
+                  onChange={(e) =>
+                    setForm((f) => ({
+                      ...f,
+                      max_students: Number(e.target.value),
+                    }))
+                  }
+                />
+              </div>
+
+              <div>
+                <Label>Status</Label>
+                <select
+                  className="w-full rounded-md bg-white/[0.05] text-white border border-white/10 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30"
+                  value={form.status}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, status: e.target.value as any }))
+                  }
+                >
+                  <option value="aberto">Aberto</option>
+                  <option value="em_andamento">Em andamento</option>
+                  <option value="concluido">Concluído</option>
+                  <option value="cancelado">Cancelado</option>
+                </select>
+              </div>
+
+              <div className="md:col-span-2">
+                <Label>Observações</Label>
+                <textarea
+                  className="w-full rounded-md bg-white/[0.05] border border-white/10 px-3 py-2"
+                  rows={3}
+                  value={form.notes || ""}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, notes: e.target.value }))
+                  }
+                />
+              </div>
+            </div>
 
             <Separator className="my-3 bg-white/10" />
             <DialogFooter>
-              <Button variant="outline" className="border-white/20 text-white hover:bg-white/10" onClick={() => setOpen(false)}>Fechar</Button>
-              <Button disabled={saving} className="bg-white/[0.1] border border-white/20 hover:bg-white/[0.2] text-white" onClick={submit}>
-                {saving ? "Salvando…" : (editing ? "Salvar alterações" : "Criar turma")}
+              <Button
+                variant="outline"
+                className="border-white/20 text-white hover:bg-white/10"
+                onClick={() => setOpen(false)}
+              >
+                Fechar
+              </Button>
+              <Button
+                disabled={saving}
+                className="bg-white/[0.1] border border-white/20 hover:bg-white/[0.2] text-white"
+                onClick={submit}
+              >
+                {saving
+                  ? "Salvando…"
+                  : editing
+                  ? "Salvar alterações"
+                  : "Criar turma"}
               </Button>
             </DialogFooter>
           </DialogContent>
