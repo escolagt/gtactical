@@ -175,7 +175,10 @@ export default function Courses() {
 
     if (error) {
       console.error(error);
-      if ((error as any).code === "23505" || String(error.message).toLowerCase().includes("duplicate")) {
+      if (
+        (error as any).code === "23505" ||
+        String(error.message).toLowerCase().includes("duplicate")
+      ) {
         setErrorMsg("Slug já está em uso. Escolha outro.");
       } else {
         setErrorMsg("Falha ao salvar o curso.");
@@ -227,22 +230,24 @@ export default function Courses() {
   };
 
   return (
-    <div className="min-h-screen bg-background py-8">
-      <div className="container mx-auto px-4">
-        <div className="text-sm text-foreground/60 mb-4">
+    <div className="min-h-screen bg-background py-6 md:py-8">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4">
+        <div className="text-xs sm:text-sm text-foreground/60 mb-3 sm:mb-4">
           Dashboard / <span className="text-foreground">Cursos</span>
         </div>
 
-        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-2">
+            <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2">
               Cursos
             </h1>
-            <p className="text-foreground/70">Gerencie os cursos disponíveis.</p>
+            <p className="text-xs sm:text-sm text-foreground/70">
+              Gerencie os cursos disponíveis.
+            </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex justify-start md:justify-end">
             <Button
-              className="bg-white/[0.1] border border-white/20 hover:bg-white/[0.2] text-white"
+              className="w-full sm:w-auto bg-white/[0.1] border border-white/20 hover:bg-white/[0.2] text-white"
               onClick={openCreate}
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -251,34 +256,40 @@ export default function Courses() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-4 gap-8">
+        <div className="grid lg:grid-cols-4 gap-6 lg:gap-8">
           <div className="lg:col-span-1">
             <AdminNav />
           </div>
 
-          <div className="lg:col-span-3">
-            <div className="flex items-center gap-2 mb-6">
-              <Search className="h-5 w-5 text-foreground/50" />
-              <Input
-                placeholder="Buscar por título, slug ou nível…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="bg-white/[0.05] border-white/10"
-              />
+          <div className="lg:col-span-3 space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="flex items-center gap-2 flex-1">
+                <Search className="h-4 w-4 sm:h-5 sm:w-5 text-foreground/50" />
+                <Input
+                  placeholder="Buscar por título, slug ou nível…"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="bg-white/[0.05] border-white/10 text-sm"
+                />
+              </div>
             </div>
 
-            <div className="overflow-x-auto rounded-xl border border-white/10 bg-white/[0.02]">
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] overflow-x-auto">
               {loading ? (
-                <div className="p-6 text-foreground/60">Carregando…</div>
+                <div className="p-4 sm:p-6 text-sm text-foreground/60">
+                  Carregando…
+                </div>
               ) : (
-                <table className="w-full text-sm">
+                <table className="w-full text-xs sm:text-sm">
                   <thead>
                     <tr className="text-left text-foreground/60 border-b border-white/10">
-                      <th className="px-4 py-3">Título</th>
-                      <th className="px-4 py-3">Slug</th>
-                      <th className="px-4 py-3">Nível</th>
-                      <th className="px-4 py-3">Ativo</th>
-                      <th className="px-4 py-3 text-right">Ações</th>
+                      <th className="px-3 sm:px-4 py-2 sm:py-3">Título</th>
+                      <th className="px-3 sm:px-4 py-2 sm:py-3">Slug</th>
+                      <th className="px-3 sm:px-4 py-2 sm:py-3">Nível</th>
+                      <th className="px-3 sm:px-4 py-2 sm:py-3">Ativo</th>
+                      <th className="px-3 sm:px-4 py-2 sm:py-3 text-right">
+                        Ações
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -287,10 +298,16 @@ export default function Courses() {
                         key={c.id}
                         className="border-b border-white/5 hover:bg-white/[0.04]"
                       >
-                        <td className="px-4 py-3 font-medium">{c.title}</td>
-                        <td className="px-4 py-3">{c.slug}</td>
-                        <td className="px-4 py-3 capitalize">{c.level}</td>
-                        <td className="px-4 py-3">
+                        <td className="px-3 sm:px-4 py-2 sm:py-3 font-medium">
+                          {c.title}
+                        </td>
+                        <td className="px-3 sm:px-4 py-2 sm:py-3 break-all">
+                          {c.slug}
+                        </td>
+                        <td className="px-3 sm:px-4 py-2 sm:py-3 capitalize">
+                          {c.level}
+                        </td>
+                        <td className="px-3 sm:px-4 py-2 sm:py-3">
                           <Badge
                             className={
                               c.is_active
@@ -302,19 +319,19 @@ export default function Courses() {
                             {c.is_active ? "ativo" : "inativo"}
                           </Badge>
                         </td>
-                        <td className="px-4 py-3 text-right">
+                        <td className="px-3 sm:px-4 py-2 sm:py-3 text-right whitespace-nowrap">
                           <Button
-                            size="sm"
+                            size="icon"
                             variant="ghost"
-                            className="text-white/70 hover:text-white hover:bg-white/10 mr-2"
+                            className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10 mr-1 sm:mr-2"
                             onClick={() => openEdit(c)}
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button
-                            size="sm"
+                            size="icon"
                             variant="ghost"
-                            className="text-red-300 hover:text-red-200 hover:bg-red-500/10"
+                            className="h-8 w-8 text-red-300 hover:text-red-200 hover:bg-red-500/10"
                             onClick={() => remove(c.id)}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -324,7 +341,10 @@ export default function Courses() {
                     ))}
                     {filtered.length === 0 && (
                       <tr>
-                        <td className="px-4 py-6 text-foreground/60" colSpan={5}>
+                        <td
+                          className="px-3 sm:px-4 py-4 sm:py-6 text-foreground/60"
+                          colSpan={5}
+                        >
                           Nenhum curso encontrado.
                         </td>
                       </tr>
@@ -337,42 +357,50 @@ export default function Courses() {
         </div>
 
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="sm:max-w-2xl bg-white/[0.02] border border-white/10 max-h-[90vh] overflow-y-auto">
+          <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-2xl bg-white/[0.02] border border-white/10 max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-white">
+              <DialogTitle className="text-white text-lg sm:text-xl">
                 {editing ? "Editar curso" : "Novo curso"}
               </DialogTitle>
-              <DialogDescription className="text-foreground/70">
+              <DialogDescription className="text-sm text-foreground/70">
                 Preencha as informações do curso.
               </DialogDescription>
             </DialogHeader>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <Label>Slug *</Label>
+                <Label className="text-sm">Slug *</Label>
                 <Input
                   value={form.slug}
                   onChange={(e) =>
-                    setForm((f) => ({ ...f, slug: normalizeSlug(e.target.value) }))
+                    setForm((f) => ({
+                      ...f,
+                      slug: normalizeSlug(e.target.value),
+                    }))
                   }
+                  className="mt-1"
                 />
               </div>
               <div>
-                <Label>Título *</Label>
+                <Label className="text-sm">Título *</Label>
                 <Input
                   value={form.title}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, title: e.target.value }))
                   }
+                  className="mt-1"
                 />
               </div>
               <div>
-                <Label>Nível</Label>
+                <Label className="text-sm">Nível</Label>
                 <select
-                  className="w-full rounded-md bg-white/[0.05] border border-white/10 px-3 py-2"
+                  className="mt-1 w-full rounded-md bg-black/60 text-white border border-white/20 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/40"
                   value={form.level}
                   onChange={(e) =>
-                    setForm((f) => ({ ...f, level: e.target.value as CourseLevel }))
+                    setForm((f) => ({
+                      ...f,
+                      level: e.target.value as CourseLevel,
+                    }))
                   }
                 >
                   <option value="iniciante">Iniciante</option>
@@ -382,29 +410,37 @@ export default function Courses() {
                 </select>
               </div>
               <div>
-                <Label>Duração (horas)</Label>
+                <Label className="text-sm">Duração (horas)</Label>
                 <Input
                   inputMode="numeric"
                   pattern="[0-9]*"
                   value={form.duration_hours}
                   onChange={(e) =>
-                    setForm((f) => ({ ...f, duration_hours: e.target.value }))
+                    setForm((f) => ({
+                      ...f,
+                      duration_hours: e.target.value,
+                    }))
                   }
+                  className="mt-1"
                 />
               </div>
               <div>
-                <Label>Vagas</Label>
+                <Label className="text-sm">Vagas</Label>
                 <Input
                   inputMode="numeric"
                   pattern="[0-9]*"
                   value={form.max_students}
                   onChange={(e) =>
-                    setForm((f) => ({ ...f, max_students: e.target.value }))
+                    setForm((f) => ({
+                      ...f,
+                      max_students: e.target.value,
+                    }))
                   }
+                  className="mt-1"
                 />
               </div>
               <div>
-                <Label>Preço (opcional)</Label>
+                <Label className="text-sm">Preço (opcional)</Label>
                 <Input
                   type="text"
                   placeholder="ex.: 497.00"
@@ -412,58 +448,73 @@ export default function Courses() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, price: e.target.value }))
                   }
+                  className="mt-1"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <Label>Descrição *</Label>
+                <Label className="text-sm">Descrição *</Label>
                 <textarea
-                  className="w-full rounded-md bg-white/[0.05] border border-white/10 px-3 py-2"
+                  className="mt-1 w-full rounded-md bg-white/[0.05] border border-white/10 px-3 py-2 text-sm"
                   rows={3}
                   value={form.description}
                   onChange={(e) =>
-                    setForm((f) => ({ ...f, description: e.target.value }))
+                    setForm((f) => ({
+                      ...f,
+                      description: e.target.value,
+                    }))
                   }
                 />
               </div>
 
               <div className="md:col-span-2">
-                <Label>Objetivos (um por linha)</Label>
+                <Label className="text-sm">Objetivos (um por linha)</Label>
                 <textarea
-                  className="w-full rounded-md bg-white/[0.05] border border-white/10 px-3 py-2"
+                  className="mt-1 w-full rounded-md bg-white/[0.05] border border-white/10 px-3 py-2 text-sm"
                   rows={3}
                   value={form.objectives}
                   onChange={(e) =>
-                    setForm((f) => ({ ...f, objectives: e.target.value }))
+                    setForm((f) => ({
+                      ...f,
+                      objectives: e.target.value,
+                    }))
                   }
                 />
               </div>
 
               <div className="md:col-span-2">
-                <Label>Metodologia (opcional)</Label>
+                <Label className="text-sm">Metodologia (opcional)</Label>
                 <textarea
-                  className="w-full rounded-md bg-white/[0.05] border border-white/10 px-3 py-2"
+                  className="mt-1 w-full rounded-md bg-white/[0.05] border border-white/10 px-3 py-2 text-sm"
                   rows={3}
                   value={form.methodology}
                   onChange={(e) =>
-                    setForm((f) => ({ ...f, methodology: e.target.value }))
+                    setForm((f) => ({
+                      ...f,
+                      methodology: e.target.value,
+                    }))
                   }
                 />
               </div>
 
               <div className="md:col-span-2">
-                <Label>Resultados esperados (opcional)</Label>
+                <Label className="text-sm">
+                  Resultados esperados (opcional)
+                </Label>
                 <textarea
-                  className="w-full rounded-md bg-white/[0.05] border border-white/10 px-3 py-2"
+                  className="mt-1 w-full rounded-md bg-white/[0.05] border border-white/10 px-3 py-2 text-sm"
                   rows={3}
                   value={form.expected_results}
                   onChange={(e) =>
-                    setForm((f) => ({ ...f, expected_results: e.target.value }))
+                    setForm((f) => ({
+                      ...f,
+                      expected_results: e.target.value,
+                    }))
                   }
                 />
               </div>
 
-              <div className="md:col-span-2 flex items-center gap-2">
+              <div className="md:col-span-2 flex flex-col sm:flex-row items-start sm:items-center gap-2 mt-1">
                 <input
                   id="is_active"
                   type="checkbox"
@@ -471,29 +522,32 @@ export default function Courses() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, is_active: e.target.checked }))
                   }
+                  className="mt-0.5"
                 />
-                <Label htmlFor="is_active">Ativo</Label>
+                <Label htmlFor="is_active" className="text-sm">
+                  Ativo
+                </Label>
               </div>
             </div>
 
             {errorMsg && (
-              <div className="mt-3 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+              <div className="mt-3 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs sm:text-sm text-red-300">
                 {errorMsg}
               </div>
             )}
 
             <Separator className="my-3 bg-white/10" />
-            <DialogFooter>
+            <DialogFooter className="flex flex-col sm:flex-row sm:justify-end gap-2">
               <Button
                 variant="outline"
-                className="border-white/20 text-white hover:bg-white/10"
+                className="w-full sm:w-auto border-white/20 text-white hover:bg-white/10"
                 onClick={() => setOpen(false)}
               >
                 Fechar
               </Button>
               <Button
                 disabled={saving}
-                className="bg-white/[0.1] border border-white/20 hover:bg-white/[0.2] text-white"
+                className="w-full sm:w-auto bg-white/[0.1] border border-white/20 hover:bg-white/[0.2] text-white"
                 onClick={submit}
               >
                 {saving ? "Salvando..." : editing ? "Salvar alterações" : "Criar curso"}
