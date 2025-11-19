@@ -1,8 +1,6 @@
 // src/components/Schedule.tsx
 import { useEffect, useState } from "react";
-import { Calendar, MapPin, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   fetchSchedulesOpen,
   type ScheduleOption,
@@ -33,41 +31,10 @@ export const Schedule = () => {
       setTimeout(() => {
         const select = document.getElementById("curso") as HTMLSelectElement | null;
         if (select && courseId) {
-          // aqui você ainda pode integrar com o LeadForm via estado global no futuro
           select.value = courseId;
         }
       }, 500);
     }
-  };
-
-  const getAvailabilityStatus = (available: number, total: number) => {
-    const percentage = total > 0 ? (available / total) * 100 : 0;
-    if (percentage <= 20)
-      return {
-        label: "Últimas vagas",
-        color: "bg-red-500/20 text-red-400 border-red-500/30",
-        pulse: true,
-      };
-    if (percentage <= 50)
-      return {
-        label: "Vagas limitadas",
-        color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-        pulse: false,
-      };
-    return {
-      label: "Vagas disponíveis",
-      color: "bg-green-500/20 text-green-400 border-green-500/30",
-      pulse: false,
-    };
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
   };
 
   return (
@@ -82,7 +49,7 @@ export const Schedule = () => {
             TURMAS ABERTAS
           </h2>
           <p className="text-lg text-foreground/70 max-w-2xl mx-auto">
-            Garanta sua vaga nas próximas turmas disponíveis
+            Selecione o curso para iniciar sua inscrição.
           </p>
         </div>
 
@@ -96,60 +63,22 @@ export const Schedule = () => {
           </p>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {schedules.map((schedule) => {
-              const status = getAvailabilityStatus(
-                schedule.availableSlots,
-                schedule.totalSlots
-              );
-
-              return (
-                <div
-                  key={schedule.id}
-                  className="glass rounded-xl p-6 hover:bg-white/[0.05] transition-colors"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <h3 className="font-display text-xl font-bold text-white">
-                      {schedule.courseName}
-                    </h3>
-                    <Badge
-                      className={`${status.color} border font-semibold ${
-                        status.pulse ? "animate-pulse-slow" : ""
-                      }`}
-                    >
-                      {status.label}
-                    </Badge>
-                  </div>
-
-                  <div className="space-y-3 mb-6">
-                    <div className="flex items-center gap-2 text-foreground/70">
-                      <Calendar className="h-4 w-4 text-[#E5E5E5]" />
-                      <span className="text-sm">
-                        {formatDate(schedule.date)}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-foreground/70">
-                      <MapPin className="h-4 w-4 text-[#E5E5E5]" />
-                      <span className="text-sm">{schedule.location}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-foreground/70">
-                      <Users className="h-4 w-4 text-[#E5E5E5]" />
-                      <span className="text-sm">
-                        {schedule.availableSlots} de {schedule.totalSlots} vagas
-                      </span>
-                    </div>
-                  </div>
-
-                  <Button
-                    onClick={() => handleEnroll(schedule.courseId)}
-                    className="w-full bg-white/[0.08] text-white border border-white/20 hover:bg-white/[0.12] font-semibold"
-                  >
-                    Reservar vaga
-                  </Button>
+            {schedules.map((schedule) => (
+              <button
+                key={schedule.id}
+                onClick={() => handleEnroll(schedule.courseId)}
+                className="glass rounded-xl p-6 text-left hover:bg-white/[0.06] transition-colors border border-white/10 group"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="font-display text-lg md:text-xl font-bold text-white">
+                    {schedule.courseName}
+                  </h3>
+                  <span className="text-xs uppercase tracking-wide text-foreground/60 group-hover:text-foreground/80">
+                    Selecionar
+                  </span>
                 </div>
-              );
-            })}
+              </button>
+            ))}
           </div>
         )}
       </div>
