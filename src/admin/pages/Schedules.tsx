@@ -10,64 +10,43 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Search, Plus, Edit, Trash2 } from "lucide-react";
 
-type CourseRef = { id: string; title: string; slug: string };
-type ScheduleRow = {
+type CourseRow = {
   id: string;
-  course_id: string;
-  start_date: string | null;
-  end_date: string | null;
-  time_start: string | null;
-  time_end: string | null;
-  location: string;
-  max_students: number;
-  enrolled_count: number;
-  status: "aberto" | "em_andamento" | "concluido" | "cancelado";
-  notes: string | null;
-  created_at: string;
+  title: string;
+  slug: string;
+  is_active: boolean;
 };
 
-const emptyForm = {
-  course_id: "",
-  start_date: "",
-  end_date: "",
-  time_start: "",
-  time_end: "",
-  location: "",
-  max_students: 12,
-  status: "aberto" as ScheduleRow["status"],
-  notes: "",
+const emptyForm: { title: string; slug: string; is_active: boolean } = {
+  title: "",
+  slug: "",
+  is_active: true,
 };
 
-export default function Schedules() {
-  const [items, setItems] = useState<(ScheduleRow & { courses?: CourseRef | null })[]>([]);
-  const [courses, setCourses] = useState<CourseRef[]>([]);
+export default function CoursesAdmin() {
+  const [items, setItems] = useState<CourseRow[]>([]);
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<ScheduleRow | null>(null);
+  const [editing, setEditing] = useState<CourseRow | null>(null);
   const [form, setForm] = useState<typeof emptyForm>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
     setLoading(true);
-    const [cRes, sRes] = await Promise.all([
-      supabase
-        .from("courses")
-        .select("id, title, slug")
-        .eq("is_active", true)
-        .order("title"),
-      supabase
-        .from("schedules")
-        .select(`*, courses(id, title, slug)`)
-        .order("start_date")
-    ]);
-    if (!cRes.error) setCourses((cRes.data || []) as CourseRef[]);
-    if (!sRes.error) setItems((sRes.data || []) as any);
+    const { data, error } = await supabase
+      .from("courses")
+      .select("id, title, slug, is_active")
+      .order("title");
+
+    if (!error && data) {
+      setItems(data as CourseRow[]);
+    }
     setLoading(false);
   };
 
@@ -77,36 +56,51 @@ export default function Schedules() {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return items.filter(i =>
-      (i.courses?.title || "").toLowerCase().includes(q) ||
-      (i.location || "").toLowerCase().includes(q)
+    return items.filter((i) =>
+      (i.title || "").toLowerCase().includes(q)
     );
   }, [items, search]);
 
+  const handleSlugAuto = (title: string) => {
+    const base = title
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
+    setForm((f) => ({ ...f, title, slug: f.slug ? f.slug : base }));
+  };
+
   const submit = async () => {
-    setSaving(true);
-    const payload = {
-      course_id: form.course_id || null,
-      start_date: form.start_date || null,
-      end_date: form.end_date || null,
-      time_start: form.time_start || null,
-      time_end: form.time_end || null,
-      location: form.location || "",
-      max_students: Number(form.max_students || 12),
-      status: form.status,
-      notes: form.notes || null,
-    };
-
-    const isEdit = !!editing;
-    const { error } = isEdit
-      ? await supabase.from("schedules").update(payload).eq("id", editing!.id)
-      : await supabase.from("schedules").insert(payload);
-
-    setSaving(false);
-    if (error) {
-      console.error(error);
+    if (!form.title.trim()) {
+      alert("Informe o título do curso.");
       return;
     }
+
+    const payload = {
+      title: form.title.trim(),
+      slug: form.slug.trim() || form.title.trim().toLowerCase().replace(/\s+/g, "-"),
+      is_active: form.is_active,
+    };
+
+    setSaving(true);
+    const isEdit = !!editing;
+
+    const { error } = isEdit
+      ? await supabase
+          .from("courses")
+          .update(payload)
+          .eq("id", editing!.id)
+      : await supabase.from("courses").insert(payload);
+
+    setSaving(false);
+
+    if (error) {
+      console.error(error);
+      alert("Erro ao salvar curso. Veja o console para detalhes.");
+      return;
+    }
+
     setOpen(false);
     setEditing(null);
     setForm(emptyForm);
@@ -114,8 +108,8 @@ export default function Schedules() {
   };
 
   const remove = async (id: string) => {
-    if (!confirm("Remover esta turma?")) return;
-    const { error } = await supabase.from("schedules").delete().eq("id", id);
+    if (!confirm("Remover este curso?")) return;
+    const { error } = await supabase.from("courses").delete().eq("id", id);
     if (!error) load();
   };
 
@@ -123,13 +117,17 @@ export default function Schedules() {
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4">
         <div className="text-sm text-foreground/60 mb-4">
-          Dashboard / <span className="text-foreground">Turmas</span>
+          Dashboard / <span className="text-foreground">Cursos</span>
         </div>
 
         <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-2">Turmas</h1>
-            <p className="text-foreground/70">Gerencie as datas e locais de cada curso.</p>
+            <h1 className="font-display text-3xl md:text-4xl font-bold mb-2">
+              Cursos
+            </h1>
+            <p className="text-foreground/70">
+              Cadastre e gerencie os cursos da escola de tiro.
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -141,7 +139,7 @@ export default function Schedules() {
               }}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Nova Turma
+              Novo curso
             </Button>
           </div>
         </div>
@@ -155,7 +153,7 @@ export default function Schedules() {
             <div className="flex items-center gap-2 mb-6">
               <Search className="h-5 w-5 text-foreground/50" />
               <Input
-                placeholder="Buscar por curso ou local…"
+                placeholder="Buscar por curso…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="bg-white/[0.05] border-white/10"
@@ -169,40 +167,24 @@ export default function Schedules() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="text-left text-foreground/60 border-b border-white/10">
-                      <th className="px-4 py-3">Curso</th>
-                      <th className="px-4 py-3">Início</th>
-                      <th className="px-4 py-3">Fim</th>
-                      <th className="px-4 py-3">Local</th>
-                      <th className="px-4 py-3">Vagas</th>
+                      <th className="px-4 py-3">Título</th>
+                      <th className="px-4 py-3">Slug</th>
                       <th className="px-4 py-3">Status</th>
                       <th className="px-4 py-3 text-right">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filtered.map((s) => (
+                    {filtered.map((c) => (
                       <tr
-                        key={s.id}
+                        key={c.id}
                         className="border-b border-white/5 hover:bg-white/[0.04]"
                       >
-                        <td className="px-4 py-3 font-medium">
-                          {s.courses?.title || "-"}
+                        <td className="px-4 py-3 font-medium">{c.title}</td>
+                        <td className="px-4 py-3 text-foreground/70">
+                          {c.slug}
                         </td>
                         <td className="px-4 py-3">
-                          {s.start_date
-                            ? new Date(s.start_date).toLocaleDateString("pt-BR")
-                            : "-"}
-                        </td>
-                        <td className="px-4 py-3">
-                          {s.end_date
-                            ? new Date(s.end_date).toLocaleDateString("pt-BR")
-                            : "-"}
-                        </td>
-                        <td className="px-4 py-3">{s.location}</td>
-                        <td className="px-4 py-3">
-                          {s.enrolled_count}/{s.max_students}
-                        </td>
-                        <td className="px-4 py-3 capitalize">
-                          {s.status.replace("_", " ")}
+                          {c.is_active ? "Ativo" : "Inativo"}
                         </td>
                         <td className="px-4 py-3 text-right">
                           <Button
@@ -210,17 +192,11 @@ export default function Schedules() {
                             variant="ghost"
                             className="text-white/70 hover:text-white hover:bg-white/10 mr-2"
                             onClick={() => {
-                              setEditing(s as any);
+                              setEditing(c);
                               setForm({
-                                course_id: s.course_id,
-                                start_date: s.start_date ?? "",
-                                end_date: s.end_date ?? "",
-                                time_start: s.time_start ?? "",
-                                time_end: s.time_end ?? "",
-                                location: s.location,
-                                max_students: s.max_students,
-                                status: s.status,
-                                notes: s.notes ?? "",
+                                title: c.title,
+                                slug: c.slug,
+                                is_active: c.is_active,
                               });
                               setOpen(true);
                             }}
@@ -231,20 +207,20 @@ export default function Schedules() {
                             size="sm"
                             variant="ghost"
                             className="text-red-300 hover:text-red-200 hover:bg-red-500/10"
-                            onClick={() => remove(s.id)}
+                            onClick={() => remove(c.id)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </td>
                       </tr>
                     ))}
-                    {filtered.length === 0 && (
+                    {filtered.length === 0 && !loading && (
                       <tr>
                         <td
                           className="px-4 py-6 text-foreground/60"
-                          colSpan={7}
+                          colSpan={4}
                         >
-                          Nenhuma turma encontrada.
+                          Nenhum curso encontrado.
                         </td>
                       </tr>
                     )}
@@ -256,135 +232,50 @@ export default function Schedules() {
         </div>
 
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="sm:max-w-2xl bg-white/[0.02] border border-white/10">
+          <DialogContent className="sm:max-w-lg bg-white/[0.02] border border-white/10">
             <DialogHeader>
               <DialogTitle className="text-white">
-                {editing ? "Editar turma" : "Nova turma"}
+                {editing ? "Editar curso" : "Novo curso"}
               </DialogTitle>
               <DialogDescription className="text-foreground/70">
-                Defina curso, datas e capacidade.
+                Defina as informações básicas do curso. Depois você pode
+                complementar em outras telas, se necessário.
               </DialogDescription>
             </DialogHeader>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2">
-                <Label>Curso *</Label>
-                <select
-                  className="w-full rounded-md bg-black/70 text-white border border-white/20 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30"
-                  value={form.course_id}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, course_id: e.target.value }))
-                  }
-                >
-                  <option value="" className="bg-black text-white">
-                    Selecione
-                  </option>
-                  {courses.map((c) => (
-                    <option
-                      key={c.id}
-                      value={c.id}
-                      className="bg-black text-white"
-                    >
-                      {c.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
+            <div className="space-y-4">
               <div>
-                <Label>Início *</Label>
+                <Label>Título *</Label>
                 <Input
-                  type="date"
-                  value={form.start_date}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, start_date: e.target.value }))
-                  }
+                  value={form.title}
+                  onChange={(e) => handleSlugAuto(e.target.value)}
                 />
               </div>
 
               <div>
-                <Label>Fim</Label>
+                <Label>Slug</Label>
                 <Input
-                  type="date"
-                  value={form.end_date || ""}
+                  value={form.slug}
                   onChange={(e) =>
-                    setForm((f) => ({ ...f, end_date: e.target.value }))
+                    setForm((f) => ({ ...f, slug: e.target.value }))
                   }
+                  placeholder="ex: defesa-residencial"
                 />
               </div>
 
-              <div>
-                <Label>Hora início</Label>
-                <Input
-                  type="time"
-                  value={form.time_start || ""}
+              <div className="flex items-center gap-2">
+                <input
+                  id="is_active"
+                  type="checkbox"
+                  checked={form.is_active}
                   onChange={(e) =>
-                    setForm((f) => ({ ...f, time_start: e.target.value }))
+                    setForm((f) => ({ ...f, is_active: e.target.checked }))
                   }
+                  className="h-4 w-4 rounded border border-white/40 bg-transparent"
                 />
-              </div>
-
-              <div>
-                <Label>Hora fim</Label>
-                <Input
-                  type="time"
-                  value={form.time_end || ""}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, time_end: e.target.value }))
-                  }
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <Label>Local *</Label>
-                <Input
-                  value={form.location}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, location: e.target.value }))
-                  }
-                />
-              </div>
-
-              <div>
-                <Label>Vagas *</Label>
-                <Input
-                  type="number"
-                  value={form.max_students}
-                  onChange={(e) =>
-                    setForm((f) => ({
-                      ...f,
-                      max_students: Number(e.target.value),
-                    }))
-                  }
-                />
-              </div>
-
-              <div>
-                <Label>Status</Label>
-                <select
-                  className="w-full rounded-md bg-white/[0.05] text-white border border-white/10 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30"
-                  value={form.status}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, status: e.target.value as any }))
-                  }
-                >
-                  <option value="aberto">Aberto</option>
-                  <option value="em_andamento">Em andamento</option>
-                  <option value="concluido">Concluído</option>
-                  <option value="cancelado">Cancelado</option>
-                </select>
-              </div>
-
-              <div className="md:col-span-2">
-                <Label>Observações</Label>
-                <textarea
-                  className="w-full rounded-md bg-white/[0.05] border border-white/10 px-3 py-2"
-                  rows={3}
-                  value={form.notes || ""}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, notes: e.target.value }))
-                  }
-                />
+                <Label htmlFor="is_active" className="text-sm">
+                  Curso ativo (aparece na vitrine)
+                </Label>
               </div>
             </div>
 
@@ -406,7 +297,7 @@ export default function Schedules() {
                   ? "Salvando…"
                   : editing
                   ? "Salvar alterações"
-                  : "Criar turma"}
+                  : "Criar curso"}
               </Button>
             </DialogFooter>
           </DialogContent>

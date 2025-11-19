@@ -13,7 +13,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Users, Target, CalendarDays, TrendingUp } from "lucide-react";
+import { Users, Target, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 type LeadStatus = "novo" | "contatado" | "confirmado" | "cancelado";
@@ -37,7 +37,6 @@ type DashboardStats = {
   totalLeads30d: number;
   totalLeadsAll: number;
   activeCourses: number;
-  openSchedules: number;
 };
 
 const weekdayLabel = (date: Date) => {
@@ -51,7 +50,6 @@ const Dashboard = () => {
     totalLeads30d: 0,
     totalLeadsAll: 0,
     activeCourses: 0,
-    openSchedules: 0,
   });
 
   const [chartData, setChartData] = useState<ChartPoint[]>([]);
@@ -89,17 +87,10 @@ const Dashboard = () => {
       .select("*", { count: "exact", head: true })
       .eq("is_active", true);
 
-    // Turmas abertas
-    const { count: openSchedules } = await supabase
-      .from("schedules")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "aberto");
-
     setStats({
       totalLeads30d: leads30 || 0,
       totalLeadsAll: leadsAll || 0,
       activeCourses: activeCourses || 0,
-      openSchedules: openSchedules || 0,
     });
   };
 
@@ -180,7 +171,7 @@ const Dashboard = () => {
             Dashboard Administrativo
           </h1>
           <p className="text-foreground/70">
-            Visão geral das inscrições, cursos e turmas.
+            Visão geral das inscrições e cursos.
           </p>
         </div>
 
@@ -193,7 +184,7 @@ const Dashboard = () => {
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-8">
             {/* Stats Cards */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="glass rounded-xl p-4 border border-white/10">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-medium text-foreground/60">
@@ -236,21 +227,6 @@ const Dashboard = () => {
                 </div>
                 <p className="text-xs text-foreground/60 mt-1">
                   Cursos disponíveis na vitrine
-                </p>
-              </div>
-
-              <div className="glass rounded-xl p-4 border border-white/10">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-medium text-foreground/60">
-                    Turmas abertas
-                  </span>
-                  <CalendarDays className="h-4 w-4 text-foreground/50" />
-                </div>
-                <div className="text-2xl font-bold">
-                  {loading ? "…" : stats.openSchedules}
-                </div>
-                <p className="text-xs text-foreground/60 mt-1">
-                  Próximas turmas com vagas
                 </p>
               </div>
             </div>
@@ -337,9 +313,7 @@ const Dashboard = () => {
                             {l.courses?.title || "-"}
                           </td>
                           <td className="px-4 py-3">
-                            <Badge
-                              className="border text-xs font-semibold px-2.5 py-1 capitalize"
-                            >
+                            <Badge className="border text-xs font-semibold px-2.5 py-1 capitalize">
                               {l.status}
                             </Badge>
                           </td>
@@ -369,9 +343,9 @@ const Dashboard = () => {
                 to="/admin/courses"
                 className="glass rounded-xl p-6 hover:bg-white/[0.04] transition-colors"
               >
-                <h3 className="font-semibold mb-2">Cursos & Turmas</h3>
+                <h3 className="font-semibold mb-2">Cursos</h3>
                 <p className="text-sm text-foreground/70">
-                  Criar, editar e organizar cursos e cronogramas.
+                  Criar, editar e organizar os cursos disponíveis.
                 </p>
               </Link>
               <Link
@@ -388,8 +362,8 @@ const Dashboard = () => {
             {/* TODO Auth */}
             <div className="mt-8 glass rounded-xl p-6 border border-primary/20">
               <p className="text-sm text-foreground/70">
-                <strong>Próximos passos:</strong> adicionar autenticação (Supabase
-                Auth/JWT) para proteger o painel administrativo.
+                <strong>Próximos passos:</strong> adicionar autenticação
+                (Supabase Auth/JWT) para proteger o painel administrativo.
               </p>
             </div>
           </div>

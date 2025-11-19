@@ -14,13 +14,7 @@ export const DashboardCards = () => {
       value: '3',
       icon: BookOpen,
       change: 'Estável',
-    },
-    {
-      title: 'Próximas turmas',
-      value: '2',
-      icon: Calendar,
-      change: 'Próximos 30d',
-    },
+    }
   ];
 
   return (

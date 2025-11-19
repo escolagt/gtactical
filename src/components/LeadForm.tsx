@@ -27,7 +27,7 @@ import {
 import { trackLeadSubmit } from "@/lib/analytics";
 import type { Lead } from "@/types/course";
 import { supabase } from "@/integrations/supabase/client";
-import { fetchCoursesActive, fetchSchedulesOpen } from "@/data/courses";
+import { fetchCoursesActive } from "@/data/courses";
 
 export const LeadForm = () => {
   const { ref, isVisible } = useIntersectionReveal();
@@ -39,15 +39,11 @@ export const LeadForm = () => {
   const [formData, setFormData] = useState<Partial<Lead>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Cursos e Turmas (carregados do banco)
+  // Cursos (carregados do banco)
   const [courses, setCourses] = useState<
     Array<{ id: string; title: string; level?: string }>
   >([]);
-  const [schedules, setSchedules] = useState<
-    Array<{ id: string; courseId: string; date: string; location: string }>
-  >([]);
   const [isLoadingCourses, setIsLoadingCourses] = useState(false);
-  const [isLoadingSchedules, setIsLoadingSchedules] = useState(false);
 
   // Carrega cursos ativos ao montar
   useEffect(() => {
@@ -75,35 +71,15 @@ export const LeadForm = () => {
     };
   }, []);
 
-  // Carrega turmas abertas (todas) ao montar
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      try {
-        setIsLoadingSchedules(true);
-        const data = await fetchSchedulesOpen(); // todas as abertas/futuras
-        if (!alive) return;
-        setSchedules(data);
-      } catch (e) {
-        console.error("Erro ao carregar turmas:", e);
-      } finally {
-        if (alive) setIsLoadingSchedules(false);
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, []);
-
   const handleInputChange = (field: keyof Lead, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-    const validateForm = (): boolean => {
+  const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
+
     if (!formData.curso) newErrors.curso = "Selecione um curso";
-    if (!formData.turma) newErrors.turma = "Selecione uma turma";
     if (!formData.nome || formData.nome.length < 3)
       newErrors.nome = "Nome completo é obrigatório";
     if (!formData.dataNascimento)
@@ -129,7 +105,7 @@ export const LeadForm = () => {
   };
 
   // ============================================
-  // SUBMIT DO FORMULÁRIO (única versão válida)
+  // SUBMIT DO FORMULÁRIO
   // ============================================
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -151,7 +127,8 @@ export const LeadForm = () => {
 
       const payload = {
         course_id: formData.curso || null,
-        schedule_id: formData.turma || null,
+        // schedule_id removido: agora inscrição é só por curso
+        schedule_id: null,
         full_name: sanitizeInput(formData.nome || ""),
         birth_date: formData.dataNascimento || "",
         cpf: (formData.cpf || "").replace(/\D/g, ""),
@@ -288,46 +265,6 @@ export const LeadForm = () => {
                     role="alert"
                   >
                     {errors.curso}
-                  </p>
-                )}
-              </div>
-
-              {/* Schedule Selection */}
-              <div className="space-y-2">
-                <Label htmlFor="turma">Turma/Data *</Label>
-                <Select
-                  value={(formData.turma as string) || ""}
-                  onValueChange={(value) => handleInputChange("turma", value)}
-                >
-                  <SelectTrigger
-                    id="turma"
-                    disabled={isLoadingSchedules}
-                    className={cn(
-                      "focus-ring",
-                      errors.turma && "border-destructive"
-                    )}
-                    aria-describedby={errors.turma ? "turma-error" : undefined}
-                  >
-                    <SelectValue placeholder="Selecione uma turma" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {schedules
-                      .filter((s) => !formData.curso || s.courseId === formData.curso)
-                      .map((schedule) => (
-                        <SelectItem key={schedule.id} value={schedule.id}>
-                          {new Date(schedule.date).toLocaleDateString("pt-BR")}{" "}
-                          — {schedule.location}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-                {errors.turma && (
-                  <p
-                    id="turma-error"
-                    className="text-sm text-destructive"
-                    role="alert"
-                  >
-                    {errors.turma}
                   </p>
                 )}
               </div>

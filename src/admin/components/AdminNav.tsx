@@ -8,7 +8,7 @@ export const AdminNav = () => {
   const navItems = [
     { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { label: 'Inscrições', href: '/admin/leads', icon: Users },
-    { label: 'Cursos & Turmas', href: '/admin/courses', icon: BookOpen },
+    { label: 'Cursos', href: '/admin/courses', icon: BookOpen },
     { label: 'Configurações', href: '/admin/settings', icon: Settings },
   ];
 

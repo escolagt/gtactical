@@ -19,7 +19,6 @@ export default function AdminLayout() {
               {item("/admin", "Dashboard")}
               {item("/admin/leads", "Leads")}
               {item("/admin/courses", "Cursos")}
-              {item("/admin/schedules", "Turmas")}
             </nav>
           </div>
           <div className="flex items-center gap-3 text-sm">

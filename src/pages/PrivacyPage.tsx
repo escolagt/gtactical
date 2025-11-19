@@ -5,7 +5,7 @@ const PrivacyPage = () => {
       <div className="max-w-4xl mx-auto px-4 py-16 space-y-10">
         <header className="space-y-2">
           <p className="text-xs uppercase tracking-[0.25em] text-emerald-400/70">
-            G-TATICAL • ESCOLA TÁTICA
+            G-TACTICAL • ESCOLA TÁTICA
           </p>
           <h1 className="text-3xl md:text-4xl font-semibold">
             Política de Privacidade
@@ -17,7 +17,8 @@ const PrivacyPage = () => {
 
         <section className="space-y-6 text-sm md:text-base text-slate-200 leading-relaxed">
           <p>
-            Esta Política de Privacidade explica como a <strong>G-TATICAL</strong>{" "}
+            Esta Política de Privacidade explica como a{" "}
+            <strong>G-TACTICAL</strong>{" "}
             coleta, utiliza, armazena e protege os dados pessoais de usuários e
             visitantes da plataforma, em conformidade com a legislação aplicável,
             incluindo a Lei Geral de Proteção de Dados (LGPD – Lei nº 13.709/2018).
@@ -46,14 +47,12 @@ const PrivacyPage = () => {
             <h2 className="text-xl font-semibold text-emerald-400">
               2. Como Utilizamos seus Dados
             </h2>
-            <p>
-              Os dados coletados são utilizados para fins como:
-            </p>
+            <p>Os dados coletados são utilizados para fins como:</p>
             <ul className="list-disc list-inside space-y-1 text-slate-300">
               <li>Responder contatos e dúvidas enviados pelos formulários;</li>
               <li>
-                Enviar informações sobre cursos, treinos, turmas e eventos
-                relacionados à G-TATICAL;
+                Enviar informações sobre cursos, treinos e eventos
+                relacionados à G-TACTICAL;
               </li>
               <li>
                 Gerenciar cadastros, inscrições e presença em atividades da escola;
@@ -91,7 +90,7 @@ const PrivacyPage = () => {
               4. Compartilhamento de Dados
             </h2>
             <p>
-              A G-TATICAL não vende ou comercializa dados pessoais. Seus dados
+              A G-TACTICAL não vende ou comercializa dados pessoais. Seus dados
               poderão ser compartilhados apenas:
             </p>
             <ul className="list-disc list-inside space-y-1 text-slate-300">
@@ -179,7 +178,7 @@ const PrivacyPage = () => {
             <p>
               Em caso de dúvidas sobre o tratamento de seus dados pessoais ou
               sobre esta Política de Privacidade, entre em contato com a
-              G-TATICAL pelos canais oficiais indicados no site.
+              G-TACTICAL pelos canais oficiais indicados no site.
             </p>
           </div>
         </section>

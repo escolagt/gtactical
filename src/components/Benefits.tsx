@@ -18,8 +18,9 @@ export const Benefits = () => {
     },
     {
       icon: Users,
-      title: "Turmas Reduzidas",
-      description: "Máximo de 15 alunos por turma para atenção personalizada",
+      title: "Grupos Reduzidos",
+      description:
+        "Treinos com número limitado de alunos para atenção realmente personalizada",
     },
     {
       icon: FileCheck,

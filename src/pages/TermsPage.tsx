@@ -5,7 +5,7 @@ const TermsPage = () => {
       <div className="max-w-4xl mx-auto px-4 py-16 space-y-10">
         <header className="space-y-2">
           <p className="text-xs uppercase tracking-[0.25em] text-emerald-400/70">
-            G-TATICAL • ESCOLA TÁTICA
+            G-TACTICAL • ESCOLA TÁTICA
           </p>
           <h1 className="text-3xl md:text-4xl font-semibold">
             Termos de Uso
@@ -17,7 +17,7 @@ const TermsPage = () => {
 
         <section className="space-y-6 text-sm md:text-base text-slate-200 leading-relaxed">
           <p>
-            Bem-vindo à plataforma <strong>G-TATICAL</strong>. Ao acessar e utilizar
+            Bem-vindo à plataforma <strong>G-TACTICAL</strong>. Ao acessar e utilizar
             este site, você concorda com os termos e condições descritos abaixo.
             Caso não concorde com algum ponto, recomendamos que não utilize a
             plataforma.
@@ -28,7 +28,7 @@ const TermsPage = () => {
               1. Objetivo da Plataforma
             </h2>
             <p>
-              A plataforma G-TATICAL tem como objetivo divulgar cursos, treinos,
+              A plataforma G-TACTICAL tem como objetivo divulgar cursos, treinos,
               eventos e conteúdos relacionados à formação tática, tiro esportivo
               e segurança, bem como facilitar o contato entre a escola e os
               alunos/interessados.
@@ -78,11 +78,11 @@ const TermsPage = () => {
             <p>
               As informações sobre cursos, treinos, horários, valores e conteúdos
               podem ser atualizadas a qualquer momento, sem aviso prévio. A
-              G-TATICAL reserva-se o direito de:
+              G-TACTICAL reserva-se o direito de:
             </p>
             <ul className="list-disc list-inside space-y-1 text-slate-300">
               <li>Alterar, suspender ou cancelar cursos e eventos;</li>
-              <li>Atualizar valores, condições de pagamento e turmas;</li>
+              <li>Atualizar valores e condições de pagamento;</li>
               <li>
                 Ajustar requisitos mínimos para participação, conforme legislação
                 e normas de segurança.
@@ -97,7 +97,7 @@ const TermsPage = () => {
             <p>
               Todo o conteúdo desta plataforma (textos, imagens, logotipos,
               materiais didáticos, vídeos, identidade visual etc.) é de
-              propriedade da <strong>G-TATICAL</strong> ou utilizado mediante
+              propriedade da <strong>G-TACTICAL</strong> ou utilizado mediante
               autorização, sendo protegido por leis de direitos autorais e
               propriedade intelectual.
             </p>
@@ -112,7 +112,7 @@ const TermsPage = () => {
               6. Limitação de Responsabilidade
             </h2>
             <p>
-              A G-TATICAL não se responsabiliza por:
+              A G-TACTICAL não se responsabiliza por:
             </p>
             <ul className="list-disc list-inside space-y-1 text-slate-300">
               <li>
@@ -147,7 +147,7 @@ const TermsPage = () => {
             </h2>
             <p>
               Em caso de dúvidas sobre estes Termos de Uso, você pode entrar em
-              contato pelos canais oficiais da G-TATICAL, como e-mail ou
+              contato pelos canais oficiais da G-TACTICAL, como e-mail ou
               WhatsApp informados na página principal.
             </p>
           </div>
